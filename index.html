@@ -308,6 +308,79 @@
             border: 2px solid #f44336;
         }
 
+        .matching-container {
+            display: grid;
+            gap: 15px;
+        }
+
+        .matching-item {
+            background: linear-gradient(135deg, #f8f9fa 0%, #ffffff 100%);
+            border: 2px solid #e9ecef;
+            border-radius: 12px;
+            padding: 15px;
+            transition: all 0.3s ease;
+        }
+
+        .matching-item:hover {
+            border-color: #667eea;
+            box-shadow: 0 4px 12px rgba(102, 126, 234, 0.15);
+        }
+
+        .matching-label {
+            font-weight: 600;
+            color: #667eea;
+            margin-bottom: 10px;
+            font-size: 0.95em;
+        }
+
+        .matching-select {
+            width: 100%;
+            padding: 10px 15px;
+            border: 2px solid #e9ecef;
+            border-radius: 8px;
+            font-size: 0.95em;
+            background: white;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .matching-select:focus {
+            outline: none;
+            border-color: #667eea;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+
+        .matching-select:hover {
+            border-color: #667eea;
+        }
+
+        .matching-item.correct {
+            background: linear-gradient(135deg, #c8e6c9 0%, #e8f5e9 100%);
+            border-color: #4caf50;
+        }
+
+        .matching-item.incorrect {
+            background: linear-gradient(135deg, #ffcdd2 0%, #ffebee 100%);
+            border-color: #f44336;
+        }
+
+        .matching-item.disabled {
+            opacity: 0.7;
+        }
+
+        .matching-item.disabled select {
+            cursor: not-allowed;
+        }
+
+        .correct-answer-label {
+            margin-top: 10px;
+            padding: 8px;
+            background: #e8f5e9;
+            border-radius: 6px;
+            font-size: 0.9em;
+            color: #2e7d32;
+        }
+
         .hidden {
             display: none;
         }
@@ -382,349 +455,304 @@
     </div>
 
     <script>
-        let questions = [];
-        let currentQuestionIndex = 0;
-        let score = 0;
-        let shuffledQuestions = [];
-        let userAnswers = [];
+let questions = [];
+let currentQuestionIndex = 0;
+let score = 0;
+let shuffledQuestions = [];
+let userAnswers = [];
 
-        // Charger les questions depuis le fichier JSON
-        async function loadQuestions() {
-            // Afficher un message de chargement
-            document.getElementById('quiz-container').innerHTML = '<div class="loading">⏳ Chargement des questions...</div>';
-            
-            try {
-                const response = await fetch('questions.json');
-                if (!response.ok) {
-                    throw new Error('Fichier non trouvé');
-                }
-                questions = await response.json();
-                
-                // Restaurer l'interface
-                document.getElementById('quiz-container').innerHTML = `
-                    <div class="progress-bar">
-                        <div class="progress-fill" id="progress"></div>
-                    </div>
-                    <div class="question-counter" id="counter"></div>
-                    <div class="question-card">
-                        <div class="question-text" id="question"></div>
-                        <img id="question-image" class="question-image hidden" alt="Question image">
-                        <div class="options" id="options"></div>
-                        <div id="feedback" class="feedback hidden"></div>
-                    </div>
-                    <div class="buttons">
-                        <button id="submit-btn">Valider</button>
-                        <button id="next-btn" class="hidden">Question Suivante</button>
-                    </div>
-                `;
-                
-                // Réattacher les événements
-                document.getElementById('submit-btn').addEventListener('click', checkAnswer);
-                document.getElementById('next-btn').addEventListener('click', nextQuestion);
-                
-                initQuiz();
-            } catch (error) {
-                console.error('Erreur:', error);
-                document.querySelector('.container').innerHTML = `
-                    <h1>🎓 Quiz de Réseau</h1>
-                    <div style="text-align: center; padding: 40px;">
-                        <h2 style="color: #f44336; margin-bottom: 20px;">❌ Erreur de chargement</h2>
-                        <p style="color: #666; margin-bottom: 20px;">
-                            Impossible de charger le fichier <strong>questions.json</strong>
-                        </p>
-                        <div class="error-box">
-                            <h3>💡 Solutions :</h3>
-                            <ol>
-                                <li><strong>Option 1 - Serveur local Python</strong><br>
-                                    Dans le dossier quiz/, exécutez :<br>
-                                    <code>python -m http.server 8000</code><br>
-                                    Puis : <code>http://localhost:8000/quiz.html</code>
-                                </li>
-                                <li style="margin-top: 15px;"><strong>Option 2 - VS Code Live Server</strong><br>
-                                    Installez l'extension "Live Server" et cliquez sur "Go Live"
-                                </li>
-                                <li style="margin-top: 15px;"><strong>Option 3 - Charger manuellement</strong><br>
-                                    <button onclick="useFileInput()" style="background: #667eea; color: white; border: none; padding: 10px 20px; border-radius: 8px; cursor: pointer; margin-top: 10px;">
-                                        📁 Sélectionner questions.json
-                                    </button>
-                                </li>
-                            </ol>
-                        </div>
-                    </div>
-                `;
-            }
-        }
+// Charger les questions depuis le fichier JSON
+async function loadQuestions() {
+    document.getElementById('quiz-container').innerHTML = '<div class="loading">⏳ Chargement des questions...</div>';
+    
+    try {
+        const response = await fetch('questions.json');
+        if (!response.ok) throw new Error('Fichier non trouvé');
+        questions = await response.json();
 
-        // Charger via input file
-        function useFileInput() {
-            const input = document.createElement('input');
-            input.type = 'file';
-            input.accept = '.json';
-            input.onchange = async (e) => {
-                const file = e.target.files[0];
-                if (file) {
-                    const reader = new FileReader();
-                    reader.onload = (event) => {
-                        try {
-                            questions = JSON.parse(event.target.result);
-                            document.querySelector('.container').innerHTML = `
-                                <h1>🎓 Quiz de Réseau</h1>
-                                <div id="quiz-container">
-                                    <div class="progress-bar">
-                                        <div class="progress-fill" id="progress"></div>
-                                    </div>
-                                    <div class="question-counter" id="counter"></div>
-                                    <div class="question-card">
-                                        <div class="question-text" id="question"></div>
-                                        <img id="question-image" class="question-image hidden" alt="Question image">
-                                        <div class="options" id="options"></div>
-                                        <div id="feedback" class="feedback hidden"></div>
-                                    </div>
-                                    <div class="buttons">
-                                        <button id="submit-btn">Valider</button>
-                                        <button id="next-btn" class="hidden">Question Suivante</button>
-                                    </div>
-                                </div>
-                                <div id="result-container" class="result-card hidden">
-                                    <h2>🎉 Quiz Terminé !</h2>
-                                    <div class="result-score" id="final-score"></div>
-                                    <div class="result-message" id="result-message"></div>
-                                    <div class="result-details" id="result-details"></div>
-                                    <button id="restart-btn">Recommencer</button>
-                                </div>
-                            `;
-                            document.getElementById('submit-btn').addEventListener('click', checkAnswer);
-                            document.getElementById('next-btn').addEventListener('click', nextQuestion);
-                            document.getElementById('restart-btn').addEventListener('click', restartQuiz);
-                            initQuiz();
-                        } catch (err) {
-                            alert('❌ Erreur : Le fichier JSON est invalide !');
-                            console.error(err);
-                        }
-                    };
-                    reader.readAsText(file);
-                }
+        // Restaurer l'interface
+        document.getElementById('quiz-container').innerHTML = `
+            <div class="progress-bar">
+                <div class="progress-fill" id="progress"></div>
+            </div>
+            <div class="question-counter" id="counter"></div>
+            <div class="question-card">
+                <div class="question-text" id="question"></div>
+                <img id="question-image" class="question-image hidden" alt="Question image">
+                <div class="options" id="options"></div>
+                <div id="feedback" class="feedback hidden"></div>
+            </div>
+            <div class="buttons">
+                <button id="submit-btn">Valider</button>
+                <button id="next-btn" class="hidden">Question Suivante</button>
+            </div>
+        `;
+
+        document.getElementById('submit-btn').addEventListener('click', checkAnswer);
+        document.getElementById('next-btn').addEventListener('click', nextQuestion);
+
+        initQuiz();
+    } catch (error) {
+        console.error('Erreur:', error);
+        document.querySelector('.container').innerHTML = `<h2>❌ Erreur de chargement du fichier JSON</h2>`;
+    }
+}
+
+// Shuffle helper
+function shuffle(array) {
+    const newArray = [...array];
+    for (let i = newArray.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [newArray[i], newArray[j]] = [newArray[j], newArray[i]];
+    }
+    return newArray;
+}
+
+// Initialiser le quiz
+function initQuiz() {
+    shuffledQuestions = shuffle(questions).map(q => {
+        if (q.type === 'matching') {
+            const pairsWithIndex = q.pairs.map((pair, idx) => ({ text: pair.term || pair, originalIndex: idx }));
+            const shuffledPairs = shuffle(pairsWithIndex);
+
+            const defsWithIndex = q.definitions.map((def, idx) => ({ text: def, originalIndex: idx }));
+            const shuffledDefs = shuffle(defsWithIndex);
+
+            const newAnswer = shuffledPairs.map(pair => {
+                const originalDefIndex = q.answer[pair.originalIndex];
+                return shuffledDefs.findIndex(def => def.originalIndex === originalDefIndex);
+            });
+
+            return {
+                type: 'matching',
+                question: q.question,
+                image: q.image || null,
+                pairs: shuffledPairs.map(p => p.text),
+                definitions: shuffledDefs.map(d => d.text),
+                answer: newAnswer
             };
-            input.click();
-        }
+        } else {
+            const optionsWithIndex = q.options.map((opt, idx) => ({ text: opt, originalIndex: idx }));
+            const shuffledOptions = shuffle(optionsWithIndex);
 
-        function shuffle(array) {
-            const newArray = [...array];
-            for (let i = newArray.length - 1; i > 0; i--) {
-                const j = Math.floor(Math.random() * (i + 1));
-                [newArray[i], newArray[j]] = [newArray[j], newArray[i]];
-            }
-            return newArray;
-        }
-
-        function initQuiz() {
-            shuffledQuestions = shuffle(questions).map(q => {
-                const optionsWithIndex = q.options.map((opt, idx) => ({ text: opt, originalIndex: idx }));
-                const shuffledOptions = shuffle(optionsWithIndex);
-                
-                let newAnswer;
-                if (Array.isArray(q.answer)) {
-                    newAnswer = q.answer.map(ansIdx => 
-                        shuffledOptions.findIndex(opt => opt.originalIndex === ansIdx)
-                    );
-                } else {
-                    newAnswer = shuffledOptions.findIndex(opt => opt.originalIndex === q.answer);
-                }
-                
-                return {
-                    ...q,
-                    options: shuffledOptions.map(opt => opt.text),
-                    answer: newAnswer
-                };
-            });
-            
-            currentQuestionIndex = 0;
-            score = 0;
-            userAnswers = [];
-            showQuestion();
-        }
-
-        function showQuestion() {
-            const question = shuffledQuestions[currentQuestionIndex];
-            const isMultiple = Array.isArray(question.answer);
-            
-            document.getElementById('counter').textContent = `Question ${currentQuestionIndex + 1} sur ${shuffledQuestions.length}`;
-            document.getElementById('question').textContent = question.question;
-            
-            const progressPercent = (currentQuestionIndex / shuffledQuestions.length) * 100;
-            document.getElementById('progress').style.width = progressPercent + '%';
-            
-            const imageEl = document.getElementById('question-image');
-            if (question.image) {
-                imageEl.src = question.image;
-                imageEl.classList.remove('hidden');
+            let newAnswer;
+            if (Array.isArray(q.answer)) {
+                newAnswer = q.answer.map(ansIdx => shuffledOptions.findIndex(opt => opt.originalIndex === ansIdx));
             } else {
-                imageEl.classList.add('hidden');
+                newAnswer = shuffledOptions.findIndex(opt => opt.originalIndex === q.answer);
             }
-            
-            const optionsContainer = document.getElementById('options');
-            optionsContainer.innerHTML = '';
-            
-            question.options.forEach((option, index) => {
-                const optionDiv = document.createElement('div');
-                optionDiv.className = 'option';
-                
-                const input = document.createElement('input');
-                input.type = isMultiple ? 'checkbox' : 'radio';
-                input.name = 'answer';
-                input.value = index;
-                input.id = `option-${index}`;
-                
-                const label = document.createElement('label');
-                label.htmlFor = `option-${index}`;
-                label.textContent = option;
-                label.style.cursor = 'pointer';
-                label.style.flex = '1';
-                
-                optionDiv.appendChild(input);
-                optionDiv.appendChild(label);
-                
-                optionDiv.addEventListener('click', function(e) {
-                    if (e.target.tagName !== 'INPUT') {
-                        input.click();
-                    }
-                    if (isMultiple) {
-                        optionDiv.classList.toggle('selected', input.checked);
-                    } else {
-                        document.querySelectorAll('.option').forEach(opt => opt.classList.remove('selected'));
-                        optionDiv.classList.add('selected');
-                    }
-                });
-                
-                optionsContainer.appendChild(optionDiv);
-            });
-            
-            document.getElementById('feedback').classList.add('hidden');
-            document.getElementById('submit-btn').classList.remove('hidden');
-            document.getElementById('next-btn').classList.add('hidden');
-        }
 
-        function checkAnswer() {
-            const question = shuffledQuestions[currentQuestionIndex];
-            const isMultiple = Array.isArray(question.answer);
-            let selectedAnswers;
-            
-            if (isMultiple) {
-                selectedAnswers = Array.from(document.querySelectorAll('input[name="answer"]:checked'))
-                    .map(input => parseInt(input.value))
-                    .sort((a, b) => a - b);
-            } else {
-                const selected = document.querySelector('input[name="answer"]:checked');
-                selectedAnswers = selected ? parseInt(selected.value) : null;
-            }
-            
-            if ((isMultiple && selectedAnswers.length === 0) || (!isMultiple && selectedAnswers === null)) {
-                alert('Veuillez sélectionner une réponse !');
-                return;
-            }
-            
-            let isCorrect;
-            if (isMultiple) {
-                const correctAnswers = [...question.answer].sort((a, b) => a - b);
-                isCorrect = JSON.stringify(selectedAnswers) === JSON.stringify(correctAnswers);
-            } else {
-                isCorrect = selectedAnswers === question.answer;
-            }
-            
-            if (isCorrect) {
-                score++;
-            }
-            
-            userAnswers.push({
-                question: question.question,
-                correct: isCorrect,
-                userAnswer: selectedAnswers,
-                correctAnswer: question.answer
+            return {
+                question: q.question,
+                image: q.image || null,
+                options: shuffledOptions.map(opt => opt.text),
+                answer: newAnswer
+            };
+        }
+    });
+
+    currentQuestionIndex = 0;
+    score = 0;
+    userAnswers = [];
+    showQuestion();
+}
+
+// Afficher une question
+function showQuestion() {
+    const question = shuffledQuestions[currentQuestionIndex];
+    const isMatching = question.type === 'matching';
+    const isMultiple = Array.isArray(question.answer) && !isMatching;
+
+    document.getElementById('counter').textContent = `Question ${currentQuestionIndex + 1} sur ${shuffledQuestions.length}`;
+    document.getElementById('question').textContent = question.question;
+    const progressPercent = (currentQuestionIndex / shuffledQuestions.length) * 100;
+    document.getElementById('progress').style.width = progressPercent + '%';
+
+    const imageEl = document.getElementById('question-image');
+    if (question.image) {
+        imageEl.src = question.image;
+        imageEl.classList.remove('hidden');
+    } else imageEl.classList.add('hidden');
+
+    const optionsContainer = document.getElementById('options');
+    optionsContainer.innerHTML = '';
+
+    if (isMatching) {
+        optionsContainer.className = 'matching-container';
+
+        question.pairs.forEach((pair, index) => {
+            const itemDiv = document.createElement('div');
+            itemDiv.className = 'matching-item';
+
+            const label = document.createElement('div');
+            label.className = 'matching-label';
+            label.textContent = pair;
+
+            const select = document.createElement('select');
+            select.className = 'matching-select';
+            select.dataset.index = index;
+
+            const defaultOption = document.createElement('option');
+            defaultOption.value = '';
+            defaultOption.textContent = '-- Choisissez --';
+            select.appendChild(defaultOption);
+
+            question.definitions.forEach((def, defIndex) => {
+                const opt = document.createElement('option');
+                opt.value = defIndex;
+                opt.textContent = def;
+                select.appendChild(opt);
             });
-            
-            document.querySelectorAll('.option').forEach((opt, idx) => {
-                opt.classList.add('disabled');
-                const input = opt.querySelector('input');
-                input.disabled = true;
-                
-                if (isMultiple) {
-                    if (question.answer.includes(idx)) {
-                        opt.classList.add('correct');
-                    }
-                    if (selectedAnswers.includes(idx) && !question.answer.includes(idx)) {
-                        opt.classList.add('incorrect');
-                    }
-                } else {
-                    if (idx === question.answer) {
-                        opt.classList.add('correct');
-                    }
-                    if (idx === selectedAnswers && idx !== question.answer) {
-                        opt.classList.add('incorrect');
-                    }
+
+            itemDiv.appendChild(label);
+            itemDiv.appendChild(select);
+            optionsContainer.appendChild(itemDiv);
+        });
+    } else {
+        optionsContainer.className = 'options';
+        question.options.forEach((option, index) => {
+            const optionDiv = document.createElement('div');
+            optionDiv.className = 'option';
+
+            const input = document.createElement('input');
+            input.type = isMultiple ? 'checkbox' : 'radio';
+            input.name = 'answer';
+            input.value = index;
+            input.id = `option-${index}`;
+
+            const label = document.createElement('label');
+            label.htmlFor = `option-${index}`;
+            label.textContent = option;
+            label.style.cursor = 'pointer';
+            label.style.flex = '1';
+
+            optionDiv.appendChild(input);
+            optionDiv.appendChild(label);
+
+            optionDiv.addEventListener('click', function(e) {
+                if (e.target.tagName !== 'INPUT') input.click();
+                if (isMultiple) optionDiv.classList.toggle('selected', input.checked);
+                else {
+                    document.querySelectorAll('.option').forEach(opt => opt.classList.remove('selected'));
+                    optionDiv.classList.add('selected');
                 }
             });
-            
-            const feedback = document.getElementById('feedback');
-            feedback.classList.remove('hidden');
-            if (isCorrect) {
-                feedback.className = 'feedback correct';
-                feedback.textContent = '✓ Correct ! Bonne réponse.';
+
+            optionsContainer.appendChild(optionDiv);
+        });
+    }
+
+    document.getElementById('feedback').classList.add('hidden');
+    document.getElementById('submit-btn').classList.remove('hidden');
+    document.getElementById('next-btn').classList.add('hidden');
+}
+
+// Vérifier la réponse
+function checkAnswer() {
+    const question = shuffledQuestions[currentQuestionIndex];
+    const isMultiple = Array.isArray(question.answer);
+    let selectedAnswers;
+
+    if (question.type === 'matching') {
+        selectedAnswers = Array.from(document.querySelectorAll('.matching-select'))
+            .map(select => select.value === '' ? null : parseInt(select.value));
+        if (selectedAnswers.includes(null)) {
+            alert('Veuillez sélectionner toutes les réponses !');
+            return;
+        }
+    } else if (isMultiple) {
+        selectedAnswers = Array.from(document.querySelectorAll('input[name="answer"]:checked'))
+            .map(input => parseInt(input.value)).sort((a, b) => a - b);
+        if (selectedAnswers.length === 0) { alert('Veuillez sélectionner une réponse !'); return; }
+    } else {
+        const selected = document.querySelector('input[name="answer"]:checked');
+        selectedAnswers = selected ? parseInt(selected.value) : null;
+        if (selectedAnswers === null) { alert('Veuillez sélectionner une réponse !'); return; }
+    }
+
+    let isCorrect;
+    if (question.type === 'matching') {
+        isCorrect = JSON.stringify(selectedAnswers) === JSON.stringify(question.answer);
+    } else if (isMultiple) {
+        const correctAnswers = [...question.answer].sort((a, b) => a - b);
+        isCorrect = JSON.stringify(selectedAnswers) === JSON.stringify(correctAnswers);
+    } else isCorrect = selectedAnswers === question.answer;
+
+    if (isCorrect) score++;
+
+    userAnswers.push({ question: question.question, correct: isCorrect, userAnswer: selectedAnswers, correctAnswer: question.answer });
+
+    if (question.type !== 'matching') {
+        document.querySelectorAll('.option').forEach((opt, idx) => {
+            opt.classList.add('disabled');
+            const input = opt.querySelector('input');
+            input.disabled = true;
+            if (isMultiple) {
+                if (question.answer.includes(idx)) opt.classList.add('correct');
+                if (selectedAnswers.includes(idx) && !question.answer.includes(idx)) opt.classList.add('incorrect');
             } else {
-                feedback.className = 'feedback incorrect';
-                feedback.textContent = '✗ Incorrect. La bonne réponse est indiquée en vert.';
+                if (idx === question.answer) opt.classList.add('correct');
+                if (idx === selectedAnswers && idx !== question.answer) opt.classList.add('incorrect');
             }
-            
-            document.getElementById('submit-btn').classList.add('hidden');
-            document.getElementById('next-btn').classList.remove('hidden');
-        }
+        });
+    }
 
-        function nextQuestion() {
-            currentQuestionIndex++;
-            if (currentQuestionIndex < shuffledQuestions.length) {
-                showQuestion();
-            } else {
-                showResults();
-            }
-        }
+    const feedback = document.getElementById('feedback');
+    feedback.classList.remove('hidden');
+    feedback.className = isCorrect ? 'feedback correct' : 'feedback incorrect';
+    feedback.textContent = isCorrect ? '✓ Correct ! Bonne réponse.' : '✗ Incorrect.';
 
-        function showResults() {
-            document.getElementById('quiz-container').classList.add('hidden');
-            document.getElementById('result-container').classList.remove('hidden');
-            
-            const percentage = Math.round((score / shuffledQuestions.length) * 100);
-            document.getElementById('final-score').textContent = `${score} / ${shuffledQuestions.length}`;
-            
-            let message = '';
-            if (percentage >= 90) {
-                message = 'Excellent ! Vous maîtrisez parfaitement le sujet ! 🏆';
-            } else if (percentage >= 70) {
-                message = 'Très bien ! Bonne compréhension du sujet. 👍';
-            } else if (percentage >= 50) {
-                message = 'Pas mal ! Continuez à vous entraîner. 📚';
-            } else {
-                message = 'Vous devriez revoir le cours. Courage ! 💪';
-            }
-            document.getElementById('result-message').textContent = message;
-            
-            const detailsHTML = `
-                <h3>Détails des réponses :</h3>
-                <p><strong>Bonnes réponses :</strong> ${score}</p>
-                <p><strong>Mauvaises réponses :</strong> ${shuffledQuestions.length - score}</p>
-                <p><strong>Score :</strong> ${percentage}%</p>
-            `;
-            document.getElementById('result-details').innerHTML = detailsHTML;
-        }
+    document.getElementById('submit-btn').classList.add('hidden');
+    document.getElementById('next-btn').classList.remove('hidden');
+}
 
-        function restartQuiz() {
-            document.getElementById('result-container').classList.add('hidden');
-            document.getElementById('quiz-container').classList.remove('hidden');
-            initQuiz();
-        }
+// Question suivante
+function nextQuestion() {
+    currentQuestionIndex++;
+    if (currentQuestionIndex < shuffledQuestions.length) showQuestion();
+    else showResults();
+}
 
-        document.getElementById('restart-btn').addEventListener('click', restartQuiz);
+// Résultats
+function showResults() {
+    document.getElementById('quiz-container').classList.add('hidden');
+    const resultContainer = document.getElementById('result-container');
+    if (resultContainer) resultContainer.classList.remove('hidden');
 
-        // Charger les questions au démarrage
-        loadQuestions();
-    </script>
+    const percentage = Math.round((score / shuffledQuestions.length) * 100);
+    document.getElementById('final-score').textContent = `${score} / ${shuffledQuestions.length}`;
+
+    let message = '';
+    if (percentage >= 90) message = 'Excellent ! 🏆';
+    else if (percentage >= 70) message = 'Très bien ! 👍';
+    else if (percentage >= 50) message = 'Pas mal ! 📚';
+    else message = 'Vous devriez revoir le cours 💪';
+
+    document.getElementById('result-message').textContent = message;
+
+    const detailsHTML = `
+        <h3>Détails des réponses :</h3>
+        <p><strong>Bonnes réponses :</strong> ${score}</p>
+        <p><strong>Mauvaises réponses :</strong> ${shuffledQuestions.length - score}</p>
+        <p><strong>Score :</strong> ${percentage}%</p>
+    `;
+    document.getElementById('result-details').innerHTML = detailsHTML;
+}
+
+// Recommencer
+function restartQuiz() {
+    document.getElementById('result-container').classList.add('hidden');
+    document.getElementById('quiz-container').classList.remove('hidden');
+    initQuiz();
+}
+
+document.getElementById('restart-btn')?.addEventListener('click', restartQuiz);
+document.getElementById('next-btn')?.addEventListener('click', nextQuestion);
+
+// Démarrage
+loadQuestions();
+</script>
+
+
 </body>
 </html>

@@ -9,15 +9,22 @@
     ],
     "answer": 0
   },
-  {
-    "question": "Faites correspondre le numéro d’étape à la séquence des étapes qui se produisent pendant le processus de basculement HSRP.",
-    "options": [
-      "Étape 1 : Le routeur de transfert échoue.",
-      "Étape 2 : Le routeur en veille cesse de voir les messages Hello du routeur de transfert.",
-      "Étape 3 : Le routeur de secours assume le rôle du routeur de transfert en utilisant à la fois les adresses IP et MAC du routeur virtuel."
-    ],
-    "answer": [0, 1, 2]
-  },
+ {
+  "type": "matching",
+  "question": "Faites correspondre le numéro d’étape à la séquence des étapes qui se produisent pendant le processus de basculement HSRP.",
+  "pairs": [
+    { "term": "Étape 1" },
+    { "term": "Étape 2" },
+    { "term": "Étape 3" }
+  ],
+  "definitions": [
+    "Le routeur de transfert échoue.",
+    "Le routeur en veille cesse de voir les messages Hello du routeur de transfert.",
+    "Le routeur de secours assume le rôle du routeur de transfert en utilisant à la fois les adresses IP et MAC du routeur virtuel."
+  ],
+  "answer": [0, 1, 2]
+}
+,
   {
     "question": "Quelle erreur a été effectuée dans la configuration de la route statique ?",
     "image": "images/q1.jpg",
@@ -120,15 +127,23 @@
     "answer": 3
   },
   {
-    "question": "Associez la description au type de VLAN correct.",
-    "options": [
-      "VLAN par défaut : tous les ports de commutateur sont attribués à ce VLAN après le démarrage initial du commutateur",
-      "VLAN de données : configuration destinée à acheminer le trafic généré par l’utilisateur",
-      "VLAN natif : acheminement du trafic non étiqueté",
-      "VLAN de gestion : une adresse IP et un masque de sous-réseau sont attribués à ce VLAN, permettant l’accès au commutateur via HTTP, Telnet, SSH ou SNMP"
-    ],
-    "answer": [0,1,2,3]
-  },
+  "type": "matching",
+  "question": "Associez la description au type de VLAN correct.",
+  "pairs": [
+    { "term": "VLAN par défaut" },
+    { "term": "VLAN de données" },
+    { "term": "VLAN natif" },
+    { "term": "VLAN de gestion" }
+  ],
+  "definitions": [
+    "tous les ports de commutateur sont attribués à ce VLAN après le démarrage initial du commutateur",
+    "configuration destinée à acheminer le trafic généré par l’utilisateur",
+    "acheminement du trafic non étiqueté",
+    "une adresse IP et un masque de sous-réseau sont attribués à ce VLAN, permettant l’accès au commutateur via HTTP, Telnet, SSH ou SNMP"
+  ],
+  "answer": [0, 1, 2, 3]
+}
+,
   {
     "question": "Comment une trame envoyée depuis PCA est-elle transmise à PCC si la table d’adresses MAC du commutateur SW1 est vide ?",
     "image": "images/q5.jpg",
@@ -141,15 +156,23 @@
     "answer": 1
   },
   {
-    "question": "Associez l’état de la liaison au statut d’interface et de protocole.",
-    "options": [
-      "operational : up/up",
-      "problème de couche 1 : down/down",
-      "problème de couche 2 : up/down",
-      "désactivé : désactivé par un administrateur"
-    ],
-    "answer": [0,1,2,3]
-  },
+  "type": "matching",
+  "question": "Associez l’état de la liaison au statut d’interface et de protocole.",
+  "pairs": [
+    { "term": "operational" },
+    { "term": "problème de couche 1" },
+    { "term": "problème de couche 2" },
+    { "term": "désactivé" }
+  ],
+  "definitions": [
+    "up/up",
+    "down/down",
+    "up/down",
+    "désactivé par un administrateur"
+  ],
+  "answer": [0, 1, 2, 3]
+}
+,
   {
     "question": "Quel est le moyen d’avoir une configuration sécurisée pour l’accès à distance à un appareil sur le réseau ?",
     "options": [
@@ -247,16 +270,24 @@
     ],
     "answer": 3
   },
-  {
-    "question": "Associez les types de message DHCP à l’ordre du processus DHCPv4.",
-    "options": [
-      "Étape 1 : DHCPDISCOVER",
-      "Étape 2 : DHCPOFFER",
-      "Étape 3 : DHCPREQUEST",
-      "Étape 4 : DHCPACK"
-    ],
-    "answer": [0,1,2,3]
-  },
+ {
+  "type": "matching",
+  "question": "Associez les types de message DHCP à l’ordre du processus DHCPv4.",
+  "pairs": [
+    { "term": "Étape 1" },
+    { "term": "Étape 2" },
+    { "term": "Étape 3" },
+    { "term": "Étape 4" }
+  ],
+  "definitions": [
+    "DHCPDISCOVER",
+    "DHCPOFFER",
+    "DHCPREQUEST",
+    "DHCPACK"
+  ],
+  "answer": [0, 1, 2, 3]
+}
+,
   {
     "question": "Quel est l’objectif de la commande ip route 0.0.0.0 0.0.0.0 serial 0/1/1 sur le routeur HQ ?",
     "image": "images/q9.jpg",
@@ -654,18 +685,27 @@
     ],
     "answer": 2
   },
-  {
-    "question": "Associez l’étape à la description de la séquence d’amorçage du commutateur correspondante. (Les options ne doivent pas être toutes utilisées.)",
-    "options": [
-      "Étape 1 : Exécution du POST",
-      "Étape 2 : Chargement du programme d’amorçage à partir de la mémoire morte (ROM)",
-      "Étape 3 : Initialisations du registre du processeur",
-      "Étape 4 : Initialisation du système de fichiers Flash",
-      "Étape 5 : Charger le logiciel IOS",
-      "Étape 6 : Contrôle de la commutation de transfert à l’IOS"
-    ],
-    "answer": [0,1,2,3,4,5,6]
-  },
+ {
+  "type": "matching",
+  "question": "Associez l'étape à la description de la séquence d'amorçage du commutateur correspondante.",
+  "pairs": [
+    { "term": "Étape 1" },
+    { "term": "Étape 2" },
+    { "term": "Étape 3" },
+    { "term": "Étape 4" },
+    { "term": "Étape 5" },
+    { "term": "Étape 6" }
+  ],
+  "definitions": [
+    "Exécution du POST",
+    "Chargement du programme d'amorçage à partir de la mémoire morte (ROM)",
+    "Initialisations du registre du processeur",
+    "Initialisation du système de fichiers Flash",
+    "Charger le logiciel IOS",
+    "Contrôle de la commutation de transfert à l'IOS"
+  ],
+  "answer": [0, 1, 2, 3, 4, 5]
+},
   {
     "question": "Reportez-vous à l’illustration. Supposons que le courant vient juste d’être rétabli. PC3 émet une requête de diffusion DHCP IPv4. À quel port SW1 transmet-il cette requête ?",
     "image": "images/q24.jpg",
