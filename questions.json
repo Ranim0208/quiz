@@ -1308,7 +1308,7 @@
   },
   {
     "question": "Reportez-vous à l’illustration. Quelle instruction indiquée dans le résultat permet au routeur R1 de répondre aux demandes DHCPv6 sans état ?",
-    "image": "images/38.jpg",
+    "image": "images/38.png",
     "options": [
       "prefix-delegation 2001:DB8:8::/48 00030001000E84244E70",
       "ipv6 unicast-routing",
@@ -1485,7 +1485,7 @@
   },
   {
     "question": "Examinez l’illustration. Un administrateur réseau vérifie la configuration du routage inter-VLAN. Les utilisateurs se plaignent que PC2 ne peut pas communiquer avec PC1. Sur la base de la sortie, quelle est la cause possible du problème ?",
-    "image": "images/39.jpg",
+    "image": "images/39.png",
     "options": [
       "Gi0/0 n’est pas configuré comme port de jonction.",
       "L’interface de commande GigabitEthernet0/0.5 a été saisie de manière incorrecte.",
@@ -1619,7 +1619,7 @@
   },
   {
     "question": "Examinez l’illustration. PC-A et PC-B sont tous deux dans le VLAN 60. PC-A est incapable de communiquer avec PC-B. Quel est le problème ?",
-    "image": "images/40.jpg",
+    "image": "images/40.png",
     "options": [
       "Le VLAN natif doit être le VLAN 60.",
       "Le VLAN natif est supprimé du lien.",
