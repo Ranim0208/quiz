@@ -7,7 +7,7 @@
       "Lorsqu’un terminal peut atteindre les périphériques locaux, et non les périphériques distants",
       "Pour déterminer si l’accès à distance est activé"
     ],
-    "answer": 0
+    "answer": 1
   },
  {
   "type": "matching",
@@ -566,7 +566,7 @@
   },
   {
     "question": "Reportez-vous à l’illustration. Un administrateur réseau a ajouté un nouveau sous-réseau au réseau et veut que les hôtes du sous-réseau reçoivent des adresses IPv4 du serveur DHCPv4. Quelles commandes permettent aux hôtes du nouveau sous-réseau de recevoir des adresses du serveur DHCPv4 ? (Choisissez deux réponses.)",
-    "image": "images/q21.jpg",
+    "image": "images/q22.jpg",
     "options": [
       "R1(config)# interface G0/0",
       "R1(config)# interface G0/1",
@@ -589,7 +589,7 @@
   },
   {
     "question": "Examinez l’illustration. Si les adresses IP du routeur de passerelle par défaut et du serveur de noms de domaine (DNS) sont correctes, quel est le problème de cette configuration ?",
-    "image": "images/q22.jpg",
+    "image": "images/q21.jpg",
     "options": [
       "Les commandes default-router et dns-server doivent être configurées avec des masques de sous-réseau.",
       "L’adresse IP du serveur de noms de domaine (DNS) ne figure pas dans la liste d’adresses exclues.",
